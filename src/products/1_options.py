@@ -1,5 +1,4 @@
 import streamlit as st
-import QuantLib as ql
 from ql.option_pricing import OptionPricer
 from ql.plotting import *
 import matplotlib.pyplot as plt

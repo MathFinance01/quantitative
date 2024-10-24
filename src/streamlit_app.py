@@ -1,5 +1,4 @@
 import streamlit as st
-import QuantLib as ql
 
 # st.container(height=100, border=20, key="contract_inputs")
 #
