@@ -25,6 +25,6 @@ def generate_dates(start_date, end_date):
     x = end_date
     cal = ql.TARGET()
     one_day = ql.Period(-1, ql.Days)
-    while x > start_date:
+    while x > start_date + 1:
         yield x
         x = cal.advance(x, one_day, ql.Following, False)

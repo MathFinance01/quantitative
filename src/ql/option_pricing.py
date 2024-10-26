@@ -6,7 +6,7 @@ option_tuple = collections.namedtuple('Option', ['price', 'delta', 'gamma', 'rho
 
 class OptionPricer:
 
-    def __init__(self, option_style='european'):
+    def __init__(self, option_style='European'):
         self.option_style = option_style
         self.start_date = ql.Date.todaysDate()
         self.stock_price = PositiveNumber()
@@ -15,10 +15,23 @@ class OptionPricer:
         self.volatility = PositiveNumber()
         self.maturity_date = FutureDate()
 
-    def option_price_and_greeks(self, stock_price, strike_price, volatility, interest_rate, maturity_date, option_type):
+    def binomial_engine(self, bsm_process, steps):
+        binomial_engine = ql.BinomialVanillaEngine(bsm_process, 'crr', steps)
+        return binomial_engine
 
+    def analytical_european_engine(self, process):
+        return ql.AnalyticEuropeanEngine(process)
+    def option_price_and_greeks(self, stock_price, strike_price, volatility, interest_rate, maturity_date, option_type):
         ql.Settings.instance().evaluationDate = self.start_date
-        option = ql.EuropeanOption(ql.PlainVanillaPayoff(option_type, strike_price), ql.EuropeanExercise(maturity_date))
+
+        payoff = ql.PlainVanillaPayoff(option_type, strike_price)
+        if self.option_style == 'European':
+            exercise = ql.EuropeanExercise(maturity_date)
+            option = ql.EuropeanOption(payoff, exercise)
+        elif self.option_style == 'American':
+            exercise = ql.AmericanExercise(self.start_date, maturity_date)
+            option = ql.VanillaOption(payoff, exercise)
+
 
         u = ql.SimpleQuote(stock_price)
         r = ql.SimpleQuote(interest_rate)
@@ -28,14 +41,20 @@ class OptionPricer:
         volatility = ql.BlackConstantVol(0, ql.TARGET(), ql.QuoteHandle(sigma), ql.Actual360())
         process = ql.BlackScholesProcess(ql.QuoteHandle(u), ql.YieldTermStructureHandle(rate_curve),
                                       ql.BlackVolTermStructureHandle(volatility))
-        engine = ql.AnalyticEuropeanEngine(process)
+
+        engine = self.analytical_european_engine(process)
+        if self.option_style == 'European':
+            engine = self.analytical_european_engine(process)
+        elif self.option_style == 'American':
+            engine = self.binomial_engine(process, 1000)
+
         option.setPricingEngine(engine)
 
         price = option.NPV()
         delta = option.delta()
         gamma = option.gamma()
-        rho = option.rho()
-        vega = option.vega()
-        theta = option.theta()
+        rho = 0#option.rho()
+        vega = 0#option.vega()
+        theta = 0#option.theta()
 
         return option_tuple(price, delta, gamma, rho, vega, theta)

@@ -3,18 +3,17 @@ from ql.option_pricing import OptionPricer
 from ql.plotting import *
 import matplotlib.pyplot as plt
 
-optionStyle = st.selectbox(
+option_style = st.selectbox(
     "Choose Style",
-    ("American", "European", "Bermudan"),
+    ("American", "European"),
 )
 
-# st.write("You selected:", optionStyle)
+# st.write("You selected:", option_style)
 
 option_type_input = st.selectbox(
     "Choose Type",
     ("Call", "Put"),
 )
-
 
 option_type = ql.Option.Call if option_type_input == "Call" else ql.Option.Put
 
@@ -36,7 +35,7 @@ today = ql.Date.todaysDate()
 
 maturity_date = ql.TARGET().advance(today, ql.Period(int(maturity), ql.Weeks), ql.Following, False)
 calendar = ql.TARGET()
-op = OptionPricer()
+op = OptionPricer(option_style)
 prices_and_greeks = op.option_price_and_greeks(stock_price, strike_price, volatility, rate, maturity_date, option_type)
 
 stock_price_generator = list(generate_continuous_inputs(stock_price))
@@ -61,6 +60,7 @@ vega_plot_data = [[next_volatility, op.option_price_and_greeks(stock_price, stri
 rho_plot_data = [(next_interest_rate, op.option_price_and_greeks(stock_price, strike_price, volatility, next_interest_rate,
                                                               maturity_date, option_type).rho)
                  for next_interest_rate in interest_rate_generator]
+
 theta_plot_data = [(calendar.businessDaysBetween(ql.Date.todaysDate(), next_maturity_date), op.option_price_and_greeks(stock_price, strike_price, volatility, rate,
                                                               next_maturity_date, option_type).theta)
                    for next_maturity_date in date_generator]
