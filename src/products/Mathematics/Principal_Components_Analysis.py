@@ -140,6 +140,8 @@ st.write('From the above derivation, we can say that the error is the sum of eig
          'excluded during reconstruction. This should give the reader a proper reason why we choose eigen vectors with highest '
          'eigen values.')
 
+#Level, slope and curve article
+
 
 
 

@@ -10,6 +10,7 @@ pg = st.navigation([st.Page("products/QuantFinance/Options.py", default=True),
                     st.Page('products/QuantFinance/Curve_Bootstrapping.py', default=False),
                     st.Page('products/Mathematics/ARMA.py', default=False),
                     st.Page('products/Mathematics/Correlation-Covariance.py', default=False),
-                    st.Page('products/Mathematics/Principal_Components_Analysis.py', default=False)
+                    st.Page('products/Mathematics/Principal_Components_Analysis.py', default=False),
+                    st.Page('products/Mathematics/Decomposition_Of_Yield_Curve_Using_PCA.py', default=False)
                     ])
 pg.run()
